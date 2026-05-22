@@ -1,42 +1,73 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>invoice-ai | Beta</title>
-    <link rel="stylesheet" href="https://jsdelivr.net"> 
+<meta charset="utf-8">
+    <title>Gemini invoice ai</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+        .result-box { background: #f4f4f4; padding: 1rem; border-radius: 5px; white-space: pre-wrap; }
+        button { cursor: pointer; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:disabled { background: #ccc; }
+    </style>
 </head>
 <body>
-    <h1>AI Invoice Processor</h1>
-    <p>Upload an invoice to extract data automatically using Gemini AI.</p>
-    <section id="upload-zone">
-        <input type="file" id="invoice-upload" accept="application/pdf, image/*">
-        <button onclick="processInvoice()">Process Document</button>
-    </section>
-    <hr>
-    <section id="results">
-        <h3>Extracted Data</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Vendor</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="data-table">
-                <tr>
-                    <td>Example Vendor</td>
-                    <td>2023-10-27</td>
-                    <td>$150.00</td>
-                    <td><mark>Pending AI</mark></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+    <h2>Upload Invoice for Scanning</h2>
+    <input type="file" id="fileInput" accept="image/png, image/jpeg, application/pdf">
+    <br><br>
+    <button onclick="uploadInvoice()" id="scanBtn">Scan Invoice</button>
+    <h3>Result:</h3>
+    <div id="output" class="result-box">Select a file and click Scan...</div>
     <script>
-        function processInvoice() {
-            alert("Connection to Gemini API coming...");
+        const CLOUD_FUNCTION_URL = "YOUR_CLOUD_RUN_URL_HERE"; 
+        async function uploadInvoice() {
+            const fileInput = document.getElementById('fileInput');
+            const outputDiv = document.getElementById('output');
+            const btn = document.getElementById('scanBtn');
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a file first!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.disabled = true;
+            outputDiv.innerText = "Processing... (this may take a few seconds)";
+
+            try {
+                const base64String = await convertToBase64(file);
+                
+                const rawBase64 = base64String.split(',')[1];
+
+                const response = await fetch(CLOUD_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: rawBase64,
+                        mime_type: file.type
+                    })
+                });
+
+                const result = await response.json();
+                
+                outputDiv.innerText = JSON.stringify(result, null, 2);
+
+            } catch (error) {
+                console.error(error);
+                outputDiv.innerText = "Error: " + error.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function convertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
     </script>
 </body>
