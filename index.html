@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>invoice-ai | Beta</title>
+    <link rel="stylesheet" href="https://jsdelivr.net"> 
+</head>
+<body>
+    <h1>AI Invoice Processor</h1>
+    <p>Upload an invoice to extract data automatically using Gemini AI.</p>
+    <section id="upload-zone">
+        <input type="file" id="invoice-upload" accept="application/pdf, image/*">
+        <button onclick="processInvoice()">Process Document</button>
+    </section>
+    <hr>
+    <section id="results">
+        <h3>Extracted Data</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                <tr>
+                    <td>Example Vendor</td>
+                    <td>2023-10-27</td>
+                    <td>$150.00</td>
+                    <td><mark>Pending AI</mark></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <script>
+        function processInvoice() {
+            alert("Connection to Gemini API coming...");
+        }
+    </script>
+</body>
+</html>
