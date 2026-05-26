@@ -9,6 +9,12 @@ if api_key:
 #we set up the req and check key exists
 @functions_framework.http
 def process_invoice(request):
+#we set headers
+    headers = {
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods':'POST, OPTIONS',
+        'Access-Control-Allow-Headers':'Content-Type'
+    }        
     if not api_key:
         return "Error: API Key ('gemlock-invoices') not found in environment variables.", 500
     request_json = request.get_json(silent=True)
@@ -35,6 +41,6 @@ def process_invoice(request):
             "data": file_data
         }
         response = model.generate_content([prompt, image_part])
-        return response.text, 200
+        return response.text, 200, headers
     except Exception as e:
         return f"Error processing invoice: {str(e)}", 500
