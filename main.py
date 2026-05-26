@@ -14,7 +14,9 @@ def process_invoice(request):
         'Access-Control-Allow-Origin':'*',
         'Access-Control-Allow-Methods':'POST, OPTIONS',
         'Access-Control-Allow-Headers':'Content-Type'
-    }        
+    }
+    if request.method == 'OPTIONS':
+        return ('', 204, headers)        
     if not api_key:
         return "Error: API Key ('gemlock-invoices') not found in environment variables.", 500
     request_json = request.get_json(silent=True)
