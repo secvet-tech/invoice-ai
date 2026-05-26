@@ -17,15 +17,16 @@ def process_invoice(request):
         return "Error: Invalid request. JSON with 'data' (base64) field required.", 400
 #we get data
     file_data = request_json['data']
-    mime_type = request_json.get('mime_type', 'image/jpeg') # Default to jpeg if missing
+    mime_type = request_json.get('mime_type', 'application/pdf')
 #init gem
     model = genai.GenerativeModel('gemini-1.5-flash')
     prompt = """
-    Extract the following vendor information from this invoice:
-    - Vendor Name
-    - Invoice Date
-    - Total Amount
-    - Tax Amount
+    Extract the information from this document:
+    - Name
+    - Number
+    - Email
+    - Home State
+    - Job
     Return the result as a valid JSON object.
     """
     try:
